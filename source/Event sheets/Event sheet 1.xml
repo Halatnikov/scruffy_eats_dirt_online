@@ -164,6 +164,7 @@
             <sub-events>
                 <event-block sid="248135209277403">
                     <conditions>
+                        <condition id="-4" name="Trigger once while true" sid="991027658400940" type="System" />
                         <condition id="-7" name="Compare instance variable" sid="328768525546606" type="Text">
                             <param id="0" name="Instance variable">ID</param>
                             <param id="1" name="Comparison">0</param>
@@ -336,9 +337,10 @@
                         </action>
                     </actions>
                 </event-block>
-                <event-block sid="320147928505941">
+                <event-block any="1" sid="320147928505941">
                     <conditions>
                         <condition id="15" name="On actor join" sid="819883513244708" type="Photon" />
+                        <condition id="16" name="On actor leave" sid="199227658186233" type="Photon" />
                     </conditions>
                     <actions>
                         <action id="0" name="Call function" sid="224916751876179" type="Function">
@@ -346,26 +348,6 @@
                             <param id="1" name="Parameter {n}"></param>
                         </action>
                         <action id="17" name="Raise event" sid="165874972948861" type="Photon">
-                            <param id="0" name="Code">1</param>
-                            <param id="1" name="Data">Globals.Time&amp;&quot;|&quot;&amp;Globals.Gamestate&amp;&quot;|&quot;&amp;Globals.TimeMax</param>
-                            <param id="2" name="InterestGroup">0</param>
-                            <param id="3" name="Cache">0</param>
-                            <param id="4" name="Receivers">1</param>
-                            <param id="5" name="TargetActors">&quot;&quot;</param>
-                            <param id="6" name="WebForward">0</param>
-                        </action>
-                    </actions>
-                </event-block>
-                <event-block sid="396416986692048">
-                    <conditions>
-                        <condition id="16" name="On actor leave" sid="199227658186233" type="Photon" />
-                    </conditions>
-                    <actions>
-                        <action id="0" name="Call function" sid="140768725971502" type="Function">
-                            <param id="0" name="Name">&quot;CreatePlayers&quot;</param>
-                            <param id="1" name="Parameter {n}"></param>
-                        </action>
-                        <action id="17" name="Raise event" sid="457906711899739" type="Photon">
                             <param id="0" name="Code">1</param>
                             <param id="1" name="Data">Globals.Time&amp;&quot;|&quot;&amp;Globals.Gamestate&amp;&quot;|&quot;&amp;Globals.TimeMax</param>
                             <param id="2" name="InterestGroup">0</param>
@@ -1905,28 +1887,13 @@
                     </sub-events>
                 </event-block>
                 <comment>jank fix if someone joins during intermission</comment>
-                <event-block sid="958564382954662">
+                <event-block any="1" sid="958564382954662">
                     <conditions>
                         <condition id="15" name="On actor join" sid="301097104540757" type="Photon" />
-                    </conditions>
-                    <actions>
-                        <action id="17" name="Raise event" sid="427642575091105" type="Photon">
-                            <param id="0" name="Code">1</param>
-                            <param id="1" name="Data">Globals.Time&amp;&quot;|&quot;&amp;Globals.Gamestate&amp;&quot;|&quot;&amp;Globals.TimeMax</param>
-                            <param id="2" name="InterestGroup">0</param>
-                            <param id="3" name="Cache">0</param>
-                            <param id="4" name="Receivers">1</param>
-                            <param id="5" name="TargetActors">&quot;&quot;</param>
-                            <param id="6" name="WebForward">0</param>
-                        </action>
-                    </actions>
-                </event-block>
-                <event-block sid="337339502679388">
-                    <conditions>
                         <condition id="16" name="On actor leave" sid="767489182985673" type="Photon" />
                     </conditions>
                     <actions>
-                        <action id="17" name="Raise event" sid="641895046320077" type="Photon">
+                        <action id="17" name="Raise event" sid="427642575091105" type="Photon">
                             <param id="0" name="Code">1</param>
                             <param id="1" name="Data">Globals.Time&amp;&quot;|&quot;&amp;Globals.Gamestate&amp;&quot;|&quot;&amp;Globals.TimeMax</param>
                             <param id="2" name="InterestGroup">0</param>

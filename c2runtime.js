@@ -21569,10 +21569,16 @@ cr.plugins_.Photon = function(runtime)
 	Acts.prototype.setAppId = function (appId)
 	{
 		this.AppId = appId;
+		if (this.lbc) {
+			this.lbc.setAppId(appId);
+		}
 	};
-	Acts.prototype.setAppVersion = function (version)
+	Acts.prototype.setAppVersion = function (appVersion)
 	{
-		this.AppVersion = version;
+		this.AppVersion = appVersion;
+		if (this.lbc) {
+			this.lbc.setAppVersion(appVersion);
+		}
 	};
 	Acts.prototype.connect = function ()
 	{
@@ -21606,8 +21612,6 @@ cr.plugins_.Photon = function(runtime)
 		var joinOptions = {
 			"rejoin": rejoin && true,
 			"createIfNotExists": createIfNotExists && true,
-			"lobbyName": lobbyName,
-			"lobbyType": lobbyType
 		};
 		var createOptions = {
 			"lobbyName": lobbyName,
@@ -21616,13 +21620,13 @@ cr.plugins_.Photon = function(runtime)
 		createOptions = this.lbc["copyCreateOptionsFromMyRoom"](createOptions);
 		this.lbc["joinRoom"](name, joinOptions, createOptions);
 	};
-	Acts.prototype.joinRandomRoom = function (matchMyRoom, matchmakingMode, lobbyName, lobbyType, sqlLobbyFilter)
+	Acts.prototype.joinRandomRoom = function (matchMyRoom, matchingType, lobbyName, lobbyType, sqlLobbyFilter)
 	{
 		if (lobbyType == 1)  {
 			lobbyType = Photon["LoadBalancing"]["Constants"]["LobbyType"]["SqlLobby"]; // 2
 		}
 		var options = {
-			"matchmakingMode": matchmakingMode,
+			"matchingType": matchingType,
 			"lobbyName": lobbyName,
 			"lobbyType": lobbyType,
 			"sqlLobbyFilter": sqlLobbyFilter
@@ -21632,6 +21636,24 @@ cr.plugins_.Photon = function(runtime)
 			options.expectedMaxPlayers = this.lbc["myRoom"]()["maxPlayers"];
 		}
 		this.lbc["joinRandomRoom"](options);
+	};
+	Acts.prototype.joinRandomOrCreateRoom = function (matchMyRoom, matchingType, lobbyName, lobbyType, sqlLobbyFilter, roomName)
+	{
+		if (lobbyType == 1)  {
+			lobbyType = Photon["LoadBalancing"]["Constants"]["LobbyType"]["SqlLobby"]; // 2
+		}
+		var options = {
+			"matchingType": matchingType,
+			"lobbyName": lobbyName,
+			"lobbyType": lobbyType,
+			"sqlLobbyFilter": sqlLobbyFilter
+		};
+		if (matchMyRoom) {
+			options.expectedCustomRoomProperties = this.lbc["myRoom"]()["_customProperties"];
+			options.expectedMaxPlayers = this.lbc["myRoom"]()["maxPlayers"];
+		}
+		var createOptions = this.lbc["copyCreateOptionsFromMyRoom"]({});
+		this.lbc["joinRandomOrCreateRoom"](options, roomName, createOptions);
 	};
 	Acts.prototype.disconnect = function ()
 	{
@@ -21727,6 +21749,10 @@ cr.plugins_.Photon = function(runtime)
 	{
 		this.lbc.logger.error("'Set unique userid check' action is deprecated. Please remove it from project. Rooms always created with 'unique userid check' set to true.");
 	};
+	Acts.prototype.setPlugins = function (plugins)
+	{
+		this.lbc["myRoom"]()["setPlugins"](plugins.split(","));
+	};
 	Acts.prototype.reset = function ()
 	{
 		this.lbc["disconnect"]();
@@ -21796,7 +21822,7 @@ cr.plugins_.Photon = function(runtime)
 	Exps.prototype.RoomPlayerCount = function (ret, name)
 	{
 		var r = this.lbc["roomInfosDict"][name];
-		ret.set_int(r && r["playerCount"]);
+		ret.set_int(r && r["playerCount"] || 0);
 	};
 	Exps.prototype.RoomProperty = function (ret, name, propName)
 	{
@@ -21820,7 +21846,11 @@ cr.plugins_.Photon = function(runtime)
 	Exps.prototype.ActorNameByNr = function (ret, nr)
 	{
 		var a = this.lbc["myRoomActors"]()[nr];
-		ret.set_string(a && a["name"] || "-- not found acorNr " + nr);
+		var name = a && a["name"];
+		if (name === void 0) {
+			name = "[-- not found acorNr " + nr + " --]";
+		}
+		ret.set_string(name);
 	};
 	Exps.prototype.PropertyOfActorByNr = function (ret, nr, propName)
 	{
@@ -25437,15 +25467,15 @@ cr.behaviors.Flash = function(runtime)
 cr.getObjectRefTable = function () { return [
 	cr.plugins_.Arr,
 	cr.plugins_.Audio,
+	cr.plugins_.Function,
 	cr.plugins_.Browser,
 	cr.plugins_.Button,
-	cr.plugins_.Function,
+	cr.plugins_.Mouse,
 	cr.plugins_.Keyboard,
 	cr.plugins_.List,
-	cr.plugins_.Mouse,
+	cr.plugins_.TextBox,
 	cr.plugins_.Text,
 	cr.plugins_.Touch,
-	cr.plugins_.TextBox,
 	cr.plugins_.Sprite,
 	cr.plugins_.Globals,
 	cr.plugins_.Photon,
@@ -25466,10 +25496,10 @@ cr.getObjectRefTable = function () { return [
 	cr.system_object.prototype.acts.SetLayerVisible,
 	cr.plugins_.Globals.prototype.cnds.CompareInstanceVar,
 	cr.system_object.prototype.cnds.IsGroupActive,
+	cr.system_object.prototype.cnds.TriggerOnce,
 	cr.plugins_.Text.prototype.cnds.CompareInstanceVar,
 	cr.plugins_.Text.prototype.acts.SetText,
 	cr.system_object.prototype.exps.projectversion,
-	cr.system_object.prototype.cnds.TriggerOnce,
 	cr.plugins_.Button.prototype.cnds.CompareInstanceVar,
 	cr.plugins_.Audio.prototype.acts.StopAll,
 	cr.plugins_.Audio.prototype.acts.Play,
